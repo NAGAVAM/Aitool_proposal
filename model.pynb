@@ -1,0 +1,41 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.pipeline import Pipeline
+
+# Load dataset
+data = pd.read_csv('mood_data.csv')
+X = data[['time_of_day', 'activity']].agg(' '.join, axis=1)
+y = data['mood']
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a pipeline
+model = Pipeline([
+    ('vectorizer', CountVectorizer()),
+    ('classifier', MultinomialNB())
+])
+
+# Train model
+model.fit(X_train, y_train)
+
+# Sample input
+input_text = ['Evening Yoga']
+predicted_mood = model.predict(input_text)[0]
+
+# Simulated mood-based script generation
+def generate_script(mood):
+    scripts = {
+        'Happy': "You're doing amazing today! Keep smiling and spread that joy!",
+        'Calm': "Take a deep breath. Peace is within you.",
+        'Stressed': "It’s okay to pause. You’ve got this. Let’s get back on track.",
+        'Excited': "Let’s channel this energy into something amazing!",
+        'Neutral': "Today is a fresh start. Let’s make it matter."
+    }
+    return scripts.get(mood, "Here's something to uplift your mood today!")
+
+# Output
+print("Predicted Mood:", predicted_mood)
+print("Generated Script:", generate_script(predicted_mood))
